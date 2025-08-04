@@ -65,17 +65,14 @@ void MainWindow::handleIncomingData(const QByteArray &chunk)
 {
 	m_terminal_widget->handleReceivedData(chunk);
 	QString message("Incoming Data (HEX): '");
-	message += QString(chunk.toHex());
+    message += QString(chunk.toHex()) + "'";
 	print(message);
-
 	m_responder_widget->handleIncomingData(chunk);
 }
 
 void MainWindow::handleResponse(const QByteArray &response)
 {
-	// Response ebenfalls loggen
 	handleSendData(response);
-
 	QString message("Response Data (HEX): '");
 	message += QString(response.toHex()) + "'";
 	statusBar()->showMessage(message, 1000);
@@ -127,13 +124,11 @@ void MainWindow::menuActionLoadConfig()
 
 void MainWindow::menuActionSaveConfig()
 {
-	// 1) Start-Verzeichnis + Default-Dateiname
 	const QString cfgDir =
 		QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
 	QDir().mkpath(cfgDir);
 	QString defaultFile = cfgDir + QDir::separator() + "config.json";
 
-	// 2) QFileDialog öffnen
     QString filter = tr("Response configuration (*.json)");
 	QString fileName =
         QFileDialog::getSaveFileName(this, tr("Save configuration ..."),

@@ -43,12 +43,8 @@ More info: [https://www.qt.io/licensing](https://www.qt.io/licensing)
    ```bash
    git clone https://github.com/M3ch4tr0n1kM4rc/serial-responder-qt-based.git
    ```
-3. Build using CMake:
-   ```bash
-   cd serial-responder-qt-based
-   mkdir build && cd build
-   cmake ..
-   make
+3. Build using QtCreator:
+   just open CMakeLists.txt
    ```
 
 ---
