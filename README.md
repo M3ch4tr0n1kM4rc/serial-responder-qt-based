@@ -41,11 +41,11 @@ More info: [https://www.qt.io/licensing](https://www.qt.io/licensing)
 1. Install [Qt](https://www.qt.io/download) (version 5.15.13 or later).
 2. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/SerialResponderQt.git
+   git clone https://github.com/M3ch4tr0n1kM4rc/serial-responder-qt-based.git
    ```
 3. Build using CMake:
    ```bash
-   cd SerialResponderQt
+   cd serial-responder-qt-based
    mkdir build && cd build
    cmake ..
    make

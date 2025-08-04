@@ -1,0 +1,10 @@
+enable_testing()
+
+add_executable(SerialResponderTest serialmanager_test.cpp)
+
+target_link_libraries(SerialResponderTest
+    Qt6::Test
+    Qt6::SerialPort
+)
+
+add_test(NAME SerialResponderTest COMMAND SerialResponderTest)
