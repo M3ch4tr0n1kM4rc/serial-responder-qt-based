@@ -173,6 +173,9 @@ void MainWindow::handleSendData(const QByteArray &data)
 	if (m_serial_manager->isOpen()) {
 		m_serial_manager->sendData(data);
 		m_terminal_widget->updateSendData(data);
+        QString message("Send Data (HEX): '");
+        message += QString(data.toHex()) + "'";
+        print(message);
 	}
 }
 
