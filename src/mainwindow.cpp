@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "mainwindow.h"
 
 #include <QDir>
@@ -64,7 +66,7 @@ MainWindow::~MainWindow()
 void MainWindow::handleIncomingData(const QByteArray &chunk)
 {
 	m_terminal_widget->handleReceivedData(chunk);
-	QString message("Incoming Data (HEX): '");
+    QString message("Incoming data (HEX): '");
     message += QString(chunk.toHex()) + "'";
 	print(message);
 	m_responder_widget->handleIncomingData(chunk);
@@ -73,7 +75,7 @@ void MainWindow::handleIncomingData(const QByteArray &chunk)
 void MainWindow::handleResponse(const QByteArray &response)
 {
 	handleSendData(response);
-	QString message("Response Data (HEX): '");
+    QString message("Response data (HEX): '");
 	message += QString(response.toHex()) + "'";
 	statusBar()->showMessage(message, 1000);
 	print(message);
@@ -111,7 +113,8 @@ void MainWindow::menuActionLoadConfig()
 	m_responder_widget->setHexMode(m_config_manager->defaultHexMode);
 
 	QString msg =
-        tr("Configuration file '%1' loaded: successful.").arg(QFileInfo(fileName).fileName());
+        tr("Configuration file '%1' loaded: successful.")
+                      .arg(QFileInfo(fileName).fileName());
 
 	statusBar()->showMessage(msg, 3000);
 
@@ -173,7 +176,7 @@ void MainWindow::handleSendData(const QByteArray &data)
 	if (m_serial_manager->isOpen()) {
 		m_serial_manager->sendData(data);
 		m_terminal_widget->updateSendData(data);
-        QString message("Send Data (HEX): '");
+        QString message("Sent data (HEX): '");
         message += QString(data.toHex()) + "'";
         print(message);
 	}

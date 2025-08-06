@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #ifndef RESPONDERPACKETHANDLER_H
 #define RESPONDERPACKETHANDLER_H
 

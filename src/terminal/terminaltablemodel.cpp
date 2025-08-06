@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "terminaltablemodel.h"
 
 #include <QBrush>
@@ -11,7 +13,8 @@ TerminalTableModel::TerminalTableModel(QObject* parent)
 	  m_ascii_foreground("#f0f5f5"),
 	  m_ascii_background("#6aa4a4"),
 	  m_hex_foreground("#f6f3f3"),
-	  m_hex_background("#7878b2")
+      m_hex_background("#7878b2"),
+      m_selected_byte({0, QDateTime(), false})
 {
 }
 
@@ -207,7 +210,7 @@ QVariant TerminalTableModel::data(const QModelIndex& index, int role) const
 			}
 			else {
 				return QString("%1")
-					.arg(static_cast<unsigned char>(byte.value), 2, 16,
+                    .arg(static_cast<unsigned int>(byte.value), 2, 16,
 						 QLatin1Char('0'))
 					.toUpper();
 			}
@@ -215,6 +218,10 @@ QVariant TerminalTableModel::data(const QModelIndex& index, int role) const
 			return isAsciiRow ? QBrush(m_ascii_foreground)
 							  : QBrush(m_hex_foreground);
 		case Qt::BackgroundRole:
+            if (byte.timestamp == m_selected_byte.timestamp) {
+                return isAsciiRow ? QBrush(QColor(200, 100, 0))
+                                  : QBrush(QColor(125, 0, 0));
+            }
 			return isAsciiRow ? QBrush(m_ascii_background)
 							  : QBrush(m_hex_background);
 		case Qt::ToolTipRole:
@@ -259,8 +266,38 @@ Qt::ItemFlags TerminalTableModel::flags(const QModelIndex& index) const
 	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
+void TerminalTableModel::handleSelection(const QModelIndex &index)
+{
+    m_selected_byte = findSelection(index);
+    beginResetModel();
+    endResetModel();
+}
+
+TerminalByte TerminalTableModel::findSelection(const QModelIndex &index) const
+{
+    int entryIndex = index.row() / 2;
+    if (m_data_entries.isEmpty()) {
+        return {};
+
+    }
+    if (entryIndex >= m_data_entries.size()) {
+        return {};
+    }
+    int column = index.column();
+    if (column == columnCount() - 1) {
+        return {};
+    }
+    const TerminalEntry& entry = m_data_entries.at(entryIndex);
+    int dataSize = entry.bytes.size();
+    if (column >= dataSize) {
+        return {};
+    }
+    return entry.bytes.at(column);
+}
+
 void TerminalTableModel::clearData()
 {
+    m_selected_byte = {};
 	m_data_entries.clear();
 	beginResetModel();
 	endResetModel();

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "terminalviewwidget.h"
 
 #include <QCheckBox>
@@ -119,6 +121,9 @@ void TerminalViewWidget::initializeTable()
 			width: 0px;
 		}
 	)");
+
+    connect(m_table_view, &QTableView::clicked,
+            this, &TerminalViewWidget::setSelection);
 }
 
 void TerminalViewWidget::initializeWidgets()
@@ -188,6 +193,7 @@ void TerminalViewWidget::initializeWidgets()
 			&TerminalViewWidget::updateColumnCount);
 	connect(m_newline_check_box, &QCheckBox::toggled, this,
 			&TerminalViewWidget::updateNewlineBehavior);
+
 }
 
 void TerminalViewWidget::updateDisplayFormat()
@@ -214,6 +220,11 @@ void TerminalViewWidget::updateNewlineBehavior(bool enabled)
 {
 	m_terminal_data_model->setWrapOnNewline(enabled);
 	updateDisplayFormat();
+}
+
+void TerminalViewWidget::setSelection(const QModelIndex& index)
+{
+    m_terminal_data_model->handleSelection(index);
 }
 
 void TerminalViewWidget::clearTable()

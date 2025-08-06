@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #ifndef TERMINALVIEWWIDGET_H
 #define TERMINALVIEWWIDGET_H
 
@@ -25,6 +27,7 @@ class TerminalViewWidget : public QWidget {
 	void updateDisplayFormat();
 	void updateColumnCount(int count);
 	void updateNewlineBehavior(bool enabled);
+    void setSelection(const QModelIndex &index);
 	void clearTable();
 
    private:

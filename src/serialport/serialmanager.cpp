@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "serialmanager.h"
 
 SerialManager::SerialManager(QObject *parent)

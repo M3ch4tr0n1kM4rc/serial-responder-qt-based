@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #ifndef SERIALWIDGET_H
 #define SERIALWIDGET_H
 

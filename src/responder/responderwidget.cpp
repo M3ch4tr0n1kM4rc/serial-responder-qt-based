@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "responderwidget.h"
 
 #include "ui_responderwidget.h"

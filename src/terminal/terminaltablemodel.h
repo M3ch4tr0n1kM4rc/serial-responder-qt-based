@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #ifndef TERMINALTABLEMODEL_H
 #define TERMINALTABLEMODEL_H
 
@@ -38,6 +40,9 @@ class TerminalTableModel : public QAbstractTableModel {
 						int role = Qt::DisplayRole) const override;
 	Qt::ItemFlags flags(const QModelIndex& index) const override;
 
+    void handleSelection(const QModelIndex& index);
+    TerminalByte findSelection(const QModelIndex& index) const;
+
 	void clearData();
 
    private:
@@ -50,6 +55,8 @@ class TerminalTableModel : public QAbstractTableModel {
 
 	QColor m_hex_foreground;
 	QColor m_hex_background;
+
+    TerminalByte m_selected_byte;
 
 	void rewrapData(const QList<TerminalEntry>& entries, int max_columns);
 };

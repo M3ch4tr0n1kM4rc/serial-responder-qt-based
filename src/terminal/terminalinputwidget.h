@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #ifndef TERMINALINPUTWIDGET_H
 #define TERMINALINPUTWIDGET_H
 

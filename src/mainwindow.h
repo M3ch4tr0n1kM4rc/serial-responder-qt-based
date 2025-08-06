@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -5,7 +7,6 @@
 
 #include "configmanager.h"
 #include "datatablemodel.h"
-#include "responderpackethandler.h"
 #include "responderwidget.h"
 #include "serialmanager.h"
 #include "serialwidget.h"

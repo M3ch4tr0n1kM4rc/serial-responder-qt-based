@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #ifndef ASCIIHEXDELEGATE_H
 #define ASCIIHEXDELEGATE_H
 
