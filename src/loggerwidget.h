@@ -17,10 +17,13 @@ private slots:
     void handleExportClicked();
 
 private:
+    void init();
+
     QPushButton *m_export_button;
     QTableWidget *m_table_widget;
     QString getEmojiForLevel(const QString &level) const;
     QString getLevelForEmoji(const QString &emoji) const;
+
 };
 
 #endif // LOGGERWIDGET_H

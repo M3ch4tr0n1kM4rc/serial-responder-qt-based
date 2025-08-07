@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 3.16)
 set(PROJECT_SOURCES
     ./configuration/configmanager.h 
     ./configuration/configmanager.cpp
+    ./custom_widgets/signalindicator.h
+    ./custom_widgets/signalindicator.cpp
     ./responder/asciihexdelegate.h
     ./responder/asciihexdelegate.cpp
     ./responder/datatablemodel.h
@@ -54,13 +56,15 @@ else()
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
+        add_executable(${PROJECT_NAME} ${PROJECT_SOURCES}
+            )
     endif()
 endif()
 
 # Include directories
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ./configuration
+    ./custom_widgets
     ./responder
     ./serialport
     ./terminal

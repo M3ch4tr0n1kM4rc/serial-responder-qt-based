@@ -51,6 +51,7 @@ void SerialManager::closePort()
         m_pinout_timer.stop();
         m_serial_port.close();
     }
+    emit updatePinouts();
     emit connectionEstablished(false, m_serial_port.portName());
 }
 
@@ -80,6 +81,10 @@ void SerialManager::handleDTR(bool value)
 
 void SerialManager::updatePinouts() {
     if (!m_serial_port.isOpen()) {
+        if (m_pinout_timer.isActive()) {
+            m_pinout_timer.stop();
+        }
+        emit setPinouts(false, false, false, false);
         return;
     }
     QSerialPort::PinoutSignals pinout_signals = m_serial_port.pinoutSignals();
@@ -101,11 +106,14 @@ void SerialManager::onError(QSerialPort::SerialPortError error)
 		return;
 	}
 	if (error == QSerialPort::PermissionError) {
-		const QString msg = m_serial_port.errorString() +
-							" Linux Fix: Try to add user to 'dialout' group"
-							" with:\n'sudo usermod -aG dialout $USER'.\n"
-							" After that 'logout' is required!";
-		emit errorOccurred(msg);
+        const QString errorString = m_serial_port.errorString();
+        if (!errorString.contains("locking")) {
+            const QString msg = m_serial_port.errorString() +
+                                " Linux Fix: Try to add user to 'dialout' group"
+                                " with:\n'sudo usermod -aG dialout $USER'.\n"
+                                " After that 'logout' is required!";
+            emit errorOccurred(msg);
+        }
 		return;
 	}
 

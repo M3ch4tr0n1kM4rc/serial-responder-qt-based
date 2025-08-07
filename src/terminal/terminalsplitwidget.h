@@ -22,7 +22,6 @@ class TerminalSplitWidget : public QWidget {
     void setRTS(bool value);
 
    public slots:
-    void handlePinouts(bool ri, bool dcd, bool cts, bool dsr);
 	void updateSendData(const QByteArray& data);
 	void handleReceivedData(const QByteArray& data);
 	void setVerticalSplitView(bool enable);

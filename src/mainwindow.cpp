@@ -48,8 +48,6 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::handleSerialError);
     connect(m_serial_manager, &SerialManager::connectionEstablished,
             this, &MainWindow::handleConnectionState);
-    connect(m_serial_manager, &SerialManager::setPinouts,
-            m_terminal_widget, &TerminalSplitWidget::handlePinouts);
 
 	// Terminal widget
 	connect(m_ui->actionTerminal_Vertikal, &QAction::triggered,

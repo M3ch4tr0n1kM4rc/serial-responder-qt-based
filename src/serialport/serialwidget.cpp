@@ -3,13 +3,16 @@
 #include "serialwidget.h"
 
 #include <QSerialPortInfo>
+#include <QLabel>
+#include <QFrame>
+#include <QSpacerItem>
 
 #include "configmanager.h"
 
 SerialWidget::SerialWidget(SerialManager* serial_manager, QWidget* parent)
 	: QWidget(parent),
 	  m_serial_manager(serial_manager),
-	  m_led_frame(new QFrame(this)),
+      m_state_led(new SignalIndicator("", this)),
 	  m_port_combo_box(new QComboBox(this)),
 	  m_baudrate_combo_box(new QComboBox(this)),
 	  m_data_bits_combo_box(new QComboBox(this)),
@@ -17,20 +20,13 @@ SerialWidget::SerialWidget(SerialManager* serial_manager, QWidget* parent)
 	  m_stop_bits_combo_box(new QComboBox(this)),
 	  m_flow_ctrl_combo_box(new QComboBox(this)),
       m_connect_button(new QPushButton("Connect", this)),
-	  m_refresh_button(new QPushButton("R", this))
+      m_refresh_button(new QPushButton("R", this)),
+    m_cts_led(new SignalIndicator("CTS", this)),
+    m_dsr_led(new SignalIndicator("DSR", this)),
+    m_ri_led(new SignalIndicator("RI", this)),
+    m_dcd_led(new SignalIndicator("DCD", this))
 {
-	QHBoxLayout* layout = new QHBoxLayout(this);
-	layout->addWidget(m_led_frame);
-	layout->addWidget(m_connect_button);
-	layout->addWidget(m_refresh_button);
-	layout->addWidget(m_port_combo_box);
-	layout->addWidget(m_baudrate_combo_box);
-	layout->addWidget(m_data_bits_combo_box);
-	layout->addWidget(m_parity_combo_box);
-	layout->addWidget(m_stop_bits_combo_box);
-	layout->addWidget(m_flow_ctrl_combo_box);
-	setLayout(layout);
-
+    initLayout();
 	initWidgets();
 	populateSerialCombos();
 
@@ -40,13 +36,41 @@ SerialWidget::SerialWidget(SerialManager* serial_manager, QWidget* parent)
 	connect(m_refresh_button, &QPushButton::clicked, this,
 			&SerialWidget::populateSerialCombos);
 
+    connect(m_serial_manager, &SerialManager::setPinouts,
+            this, &SerialWidget::handlePinouts);
+
 	updateLed(LedState::Disconnected);
+
+}
+
+void SerialWidget::initLayout()
+{
+    QHBoxLayout* led_layout = new QHBoxLayout;
+    led_layout->addWidget(m_cts_led);
+    led_layout->addWidget(m_dsr_led);
+    led_layout->addWidget(m_ri_led);
+    led_layout->addWidget(m_dcd_led);
+    led_layout->setSpacing(2);
+    led_layout->setMargin(0);
+
+    QHBoxLayout* layout = new QHBoxLayout(this);
+    layout->addWidget(m_state_led);
+    layout->addWidget(m_connect_button);
+    layout->addWidget(m_refresh_button);
+    layout->addWidget(m_port_combo_box);
+    layout->addWidget(m_baudrate_combo_box);
+    layout->addWidget(m_data_bits_combo_box);
+    layout->addWidget(m_parity_combo_box);
+    layout->addWidget(m_stop_bits_combo_box);
+    layout->addWidget(m_flow_ctrl_combo_box);
+    layout->addSpacerItem(new QSpacerItem(
+        40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    layout->addLayout(led_layout);
+    setLayout(layout);
 }
 
 void SerialWidget::initWidgets()
 {
-	m_led_frame->setMinimumSize({20, 20});
-	m_led_frame->setMaximumSize({20, 20});
 	m_connect_button->setMaximumWidth(100);
 	m_refresh_button->setMaximumWidth(30);
 	m_refresh_button->setToolTip("Refresh the list of serial devices");
@@ -161,19 +185,18 @@ QSerialPort::FlowControl SerialWidget::selectedFlowControl() const
 
 void SerialWidget::updateLed(LedState state)
 {
-	QString style;
-	switch (state) {
-		case LedState::Connected:
-			style = "background-color:limegreen;";
-			break;
-		case LedState::Disconnected:
-			style = "background-color:lightgray;";
-			break;
-		case LedState::Error:
-			style = "background-color:red;";
-			break;
-	}
-	m_led_frame->setStyleSheet("border-radius:8px; " + style);
+    QString style;
+    switch (state) {
+    case LedState::Connected:
+        m_state_led->setState(SignalIndicator::State::On);
+        break;
+    case LedState::Disconnected:
+        m_state_led->setState(SignalIndicator::State::Off);
+        break;
+    case LedState::Error:
+        m_state_led->setState(SignalIndicator::State::Error);
+        break;
+    }
 }
 
 void SerialWidget::connectClicked()
@@ -198,4 +221,12 @@ void SerialWidget::connectClicked()
 	else {
 		updateLed(LedState::Error);
 	}
+}
+
+void SerialWidget::handlePinouts(bool ri, bool dcd, bool cts, bool dsr)
+{
+    m_cts_led->setValue(cts);
+    m_dcd_led->setValue(dcd);
+    m_dsr_led->setValue(dsr);
+    m_ri_led->setValue(ri);
 }

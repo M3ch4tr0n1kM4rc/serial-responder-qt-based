@@ -37,11 +37,15 @@ class ResponderWidget : public QWidget {
 	void handlePacket(const QByteArray &packet);
 
    private:
+    void initDesign();
+    void initHeader();
+    void populateFormatCombo();
+
 	Ui::ResponderWidget *m_ui;
 	DataTableModel *m_serial_data_model;
 	SerialManager *m_serial_manager;
 	ResponderPacketHandler *m_packet_handler;
-	void populateFormatCombo();
+
 };
 
 #endif	// RESPONDERWIDGET_H

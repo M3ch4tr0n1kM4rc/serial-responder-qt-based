@@ -17,10 +17,6 @@ class TerminalInputWidget : public QWidget {
 	explicit TerminalInputWidget(QWidget* parent = nullptr);
 
    public slots:
-    void handleCTS(bool state);
-    void handleDSR(bool state);
-    void handleRI(bool state);
-    void handleDCD(bool state);
 
    signals:
 	void sendData(const QByteArray& data);
@@ -38,10 +34,7 @@ class TerminalInputWidget : public QWidget {
 	QPushButton* m_send_button;
     QPushButton* m_rts_button;
     QPushButton* m_dtr_button;
-    QFrame* m_cts_led_frame;
-    QFrame* m_dsr_led_frame;
-    QFrame* m_ri_led_frame;
-    QFrame* m_dcd_led_frame;
+
     QByteArray parseHexInput(const QString& raw_text);
     void toggleFrame(QFrame *frame, bool state);
 };

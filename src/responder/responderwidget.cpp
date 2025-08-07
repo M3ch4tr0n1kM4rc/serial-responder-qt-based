@@ -16,6 +16,7 @@ ResponderWidget::ResponderWidget(DataTableModel *serial_data_model,
 	m_ui->tvInput->setModel(m_serial_data_model);
 	m_ui->tvInput->setColumnWidth(4, 60);
 
+    initDesign();
 	populateFormatCombo();
 
 	// UI-Events
@@ -36,6 +37,81 @@ ResponderWidget::ResponderWidget(DataTableModel *serial_data_model,
 ResponderWidget::~ResponderWidget()
 {
 	delete m_ui;
+}
+
+void ResponderWidget::initDesign()
+{
+    m_ui->tvInput->setStyleSheet(R"(
+        QWidget {
+            background-color: #404244;
+        }
+        /* Base table styling */
+        QTableView {
+            background-color: #2e2f30;
+            color: #ffffff;
+            gridline-color: transparent;
+            selection-background-color: #3c3d3e;
+            selection-color: #ffffff;
+        }
+        /* Corner widget between headers */
+        QTableCornerButton::section {
+            background-color: #404244;
+            border: none;
+        }
+        /* Horizontal and vertical headers */
+        QHeaderView::section {
+            background-color: #404244;
+            color: white;
+            padding: 4px;
+            border: none;
+        }
+        /* Vertical scrollbar */
+        QScrollBar:vertical {
+            background-color: #2e2f30;
+            width: 10px;
+            margin: 0px;
+        }
+        QScrollBar::handle:vertical {
+            background-color: #FFCC00;
+            border-radius: 4px;
+        }
+        QScrollBar::handle:vertical:hover {
+            background-color: #FFD633;
+        }
+        /* Horizontal scrollbar */
+        QScrollBar:horizontal {
+            background-color: #2e2f30;
+            height: 10px;
+            margin: 0px;
+        }
+        QScrollBar::handle:horizontal {
+            background-color: #FFCC00;
+            border-radius: 4px;
+        }
+        QScrollBar::handle:horizontal:hover {
+            background-color: #FFD633;
+        }
+        /* Hide scrollbar buttons */
+        QScrollBar::add-line, QScrollBar::sub-line {
+            background: none;
+            border: none;
+            height: 0px;
+            width: 0px;
+        }
+    )");
+
+    initHeader();
+}
+
+void ResponderWidget::initHeader()
+{
+    QHeaderView *header = m_ui->tvInput->horizontalHeader();
+    header->setSectionResizeMode(QHeaderView::Interactive);
+    header->setSectionResizeMode(0, QHeaderView::Stretch);
+    header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(2, QHeaderView::Stretch);
+    header->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(4, QHeaderView::ResizeToContents);
 }
 
 void ResponderWidget::populateFormatCombo()

@@ -51,14 +51,6 @@ TerminalSplitWidget::TerminalSplitWidget(QWidget* parent)
 	setLayout(layout);
 }
 
-void TerminalSplitWidget::handlePinouts(bool ri, bool dcd, bool cts, bool dsr)
-{
-    m_sender_input->handleCTS(cts);
-    m_sender_input->handleDCD(dcd);
-    m_sender_input->handleDSR(dsr);
-    m_sender_input->handleRI(ri);
-}
-
 void TerminalSplitWidget::updateSendData(const QByteArray& data) {
 	QDateTime now = QDateTime::currentDateTime();
 	m_sender_terminal->appendData(data, now, false);
