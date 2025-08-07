@@ -7,6 +7,7 @@
 
 #include "configmanager.h"
 #include "datatablemodel.h"
+#include "loggerwidget.h"
 #include "responderwidget.h"
 #include "serialmanager.h"
 #include "serialwidget.h"
@@ -31,6 +32,7 @@ class MainWindow : public QMainWindow {
 	void menuActionSaveConfig();
 
 	// Callback-Slots
+    void handleConnectionState(bool value, const QString &portname);
 	void handleSendData(const QByteArray &data);
 	void handleSerialError(const QString &err);
 	void handleIncomingData(const QByteArray &chunk);
@@ -41,6 +43,8 @@ class MainWindow : public QMainWindow {
 	void error(const QString& msg);
 
    private:
+    void writeLog(const QString &level, const QString &msg);
+
 	Ui::MainWindow *m_ui;
 	DataTableModel *m_serial_data_model;
 	ConfigManager *m_config_manager;
@@ -48,6 +52,8 @@ class MainWindow : public QMainWindow {
 	SerialWidget* m_serial_widget;
 	TerminalSplitWidget *m_terminal_widget;
 	ResponderWidget* m_responder_widget;
+    LoggerWidget* m_logger_widget;
+
 };
 
 #endif	// MAINWINDOW_H

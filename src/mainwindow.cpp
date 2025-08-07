@@ -19,14 +19,17 @@ MainWindow::MainWindow(QWidget *parent)
 	  m_serial_manager(new SerialManager(this)),
 	  m_serial_widget(new SerialWidget(m_serial_manager, this)),
 	  m_terminal_widget(new TerminalSplitWidget(this)),
-	  m_responder_widget(new ResponderWidget(m_serial_data_model, this)),
+      m_responder_widget(new ResponderWidget(m_serial_data_model, this)),
+      m_logger_widget(new LoggerWidget(this)),
 	  m_ui(new Ui::MainWindow)
 {
 	m_ui->setupUi(this);
+    m_terminal_widget->setEnabled(false);
 
 	m_ui->serialLayout->addWidget(m_serial_widget);
 	m_ui->terminalLayout->addWidget(m_terminal_widget);
 	m_ui->responderLayout->addWidget(m_responder_widget);
+    m_ui->loggerLayout->addWidget(m_logger_widget);
 
 	// UI-Events
     connect(m_ui->actionLoadConfig, &QAction::triggered,
@@ -43,12 +46,20 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::handleIncomingData);
     connect(m_serial_manager, &SerialManager::errorOccurred,
             this, &MainWindow::handleSerialError);
+    connect(m_serial_manager, &SerialManager::connectionEstablished,
+            this, &MainWindow::handleConnectionState);
+    connect(m_serial_manager, &SerialManager::setPinouts,
+            m_terminal_widget, &TerminalSplitWidget::handlePinouts);
 
 	// Terminal widget
 	connect(m_ui->actionTerminal_Vertikal, &QAction::triggered,
 			m_terminal_widget, &TerminalSplitWidget::setVerticalSplitView);
     connect(m_terminal_widget, &TerminalSplitWidget::sendData,
             this, &MainWindow::handleSendData);
+    connect(m_terminal_widget, &TerminalSplitWidget::setRTS,
+            m_serial_manager, &SerialManager::handleRTS);
+    connect(m_terminal_widget, &TerminalSplitWidget::setDTR,
+            m_serial_manager, &SerialManager::handleDTR);
 
 	// Responder Widget
     connect(m_responder_widget, &ResponderWidget::responseReady,
@@ -63,22 +74,41 @@ MainWindow::~MainWindow()
 	delete m_ui;
 }
 
+void MainWindow::handleSendData(const QByteArray &data)
+{
+    if (m_serial_manager->isOpen()) {
+        m_serial_manager->sendData(data);
+        m_terminal_widget->updateSendData(data);
+        QString message("Sent data (HEX): '");
+        message += QString(data.toHex()) + "'";
+        print(message);
+    }
+}
+
 void MainWindow::handleIncomingData(const QByteArray &chunk)
 {
-	m_terminal_widget->handleReceivedData(chunk);
+    m_terminal_widget->handleReceivedData(chunk);
     QString message("Incoming data (HEX): '");
     message += QString(chunk.toHex()) + "'";
-	print(message);
-	m_responder_widget->handleIncomingData(chunk);
+    print(message);
+    m_responder_widget->handleIncomingData(chunk);
 }
 
 void MainWindow::handleResponse(const QByteArray &response)
 {
-	handleSendData(response);
+    handleSendData(response);
     QString message("Response data (HEX): '");
-	message += QString(response.toHex()) + "'";
-	statusBar()->showMessage(message, 1000);
-	print(message);
+    message += QString(response.toHex()) + "'";
+    statusBar()->showMessage(message, 1000);
+    print(message);
+}
+
+void MainWindow::handleSerialError(const QString &err)
+{
+    QString msg = "Serial Error: " + err;
+    QMessageBox::critical(this, "Serial Error", err);
+    m_serial_widget->updateLed(SerialWidget::LedState::Error);
+    error(msg);
 }
 
 void MainWindow::menuActionLoadConfig()
@@ -171,36 +201,32 @@ void MainWindow::menuActionSaveConfig()
 	setWindowTitle(title);
 }
 
-void MainWindow::handleSendData(const QByteArray &data)
+void MainWindow::handleConnectionState(bool value, const QString& portname)
 {
-	if (m_serial_manager->isOpen()) {
-		m_serial_manager->sendData(data);
-		m_terminal_widget->updateSendData(data);
-        QString message("Sent data (HEX): '");
-        message += QString(data.toHex()) + "'";
-        print(message);
-	}
-}
-
-void MainWindow::handleSerialError(const QString &err)
-{
-	QString msg = "Serial Error: " + err;
-	QMessageBox::critical(this, "Serial Error", err);
-	m_serial_widget->updateLed(SerialWidget::LedState::Error);
-	error(msg);
+    m_terminal_widget->setEnabled(value);
+    m_responder_widget->setEnabled(value);
+    QString msg = "Connection to '" + portname + "' " + QString(value ? "opened" : "closed");
+    qDebug() << msg;
+    print(msg);
 }
 
 void MainWindow::print(const QString &msg)
 {
-    m_ui->textEditLogger->append(msg);
+    writeLog("MESSAGE", msg);
 }
 
 void MainWindow::warning(const QString &msg)
 {
-    m_ui->textEditLogger->append(msg);
+    writeLog("WARNING", msg);
 }
 
 void MainWindow::error(const QString &msg)
 {
-    m_ui->textEditLogger->append(msg);
+    writeLog("ERROR", msg);
+}
+
+void MainWindow::writeLog(const QString& level, const QString &msg)
+{
+    const QString timeString = QDateTime::currentDateTimeUtc().toString(Qt::DateFormat::ISODateWithMs);
+    m_logger_widget->addLogEntry("| " + timeString + " | " + level + " | " + msg + " |");
 }

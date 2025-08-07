@@ -29,6 +29,8 @@ set(PROJECT_SOURCES
     ./terminal/terminalviewwidget.cpp
     ./terminal/terminalinputwidget.h
     ./terminal/terminalinputwidget.cpp
+    loggerwidget.h
+    loggerwidget.cpp
     main.cpp
     mainwindow.cpp
     mainwindow.h

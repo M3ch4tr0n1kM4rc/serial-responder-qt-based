@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QSerialPort>
+#include <QTimer>
 
 class SerialManager : public QObject {
 	Q_OBJECT
@@ -23,17 +24,23 @@ class SerialManager : public QObject {
 
    public slots:
 	void sendData(const QByteArray &data);
+    void handleRTS(bool value);
+    void handleDTR(bool value);
 
    signals:
+    void setPinouts(bool ri, bool dcd, bool cts, bool dsr);
+    void connectionEstablished(bool connected, const QString& port_name);
 	void dataReceived(const QByteArray &chunk);
-	void errorOccurred(const QString &errorString);
+    void errorOccurred(const QString &error_string);
 
    private slots:
 	void onReadyRead();
 	void onError(QSerialPort::SerialPortError error);
+    void updatePinouts();
 
-   private:
+private:
 	QSerialPort m_serial_port;
+    QTimer m_pinout_timer;
 };
 
 #endif	// SERIALMANAGER_H

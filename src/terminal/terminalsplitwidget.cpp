@@ -36,8 +36,12 @@ TerminalSplitWidget::TerminalSplitWidget(QWidget* parent)
 	m_splitter->setStretchFactor(0, 1);
 	m_splitter->setStretchFactor(1, 1);
 
-	connect(m_sender_input, &TerminalInputWidget::sendData, this,
-			&TerminalSplitWidget::sendData);
+    connect(m_sender_input, &TerminalInputWidget::sendData,
+            this, &TerminalSplitWidget::sendData);
+    connect(m_sender_input, &TerminalInputWidget::setRTS,
+            this, &TerminalSplitWidget::setRTS);
+    connect(m_sender_input, &TerminalInputWidget::setDTR,
+            this, &TerminalSplitWidget::setDTR);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(m_splitter);
@@ -45,6 +49,14 @@ TerminalSplitWidget::TerminalSplitWidget(QWidget* parent)
 	layout->setStretch(0, 1);  // splitter stretches
 	layout->setStretch(1, 0);  // input stays fixed
 	setLayout(layout);
+}
+
+void TerminalSplitWidget::handlePinouts(bool ri, bool dcd, bool cts, bool dsr)
+{
+    m_sender_input->handleCTS(cts);
+    m_sender_input->handleDCD(dcd);
+    m_sender_input->handleDSR(dsr);
+    m_sender_input->handleRI(ri);
 }
 
 void TerminalSplitWidget::updateSendData(const QByteArray& data) {

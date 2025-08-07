@@ -1,24 +1,54 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "terminalinputwidget.h"
+#include "qlabel.h"
 
 #include <QComboBox>
+#include <QFrame>
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
 
 TerminalInputWidget::TerminalInputWidget(QWidget* parent)
 	: QWidget(parent)
+    , m_input_field(new QLineEdit(this))
+    , m_input_format(new QComboBox(this))
+    , m_send_button(new QPushButton("Send", this))
+    , m_rts_button(new QPushButton("RTS", this))
+    , m_dtr_button(new QPushButton("DTR", this))
+    , m_cts_led_frame(new QFrame(this))
+    , m_dsr_led_frame(new QFrame(this))
+    , m_ri_led_frame(new QFrame(this))
+    , m_dcd_led_frame(new QFrame(this))
 {
-	m_input_field = new QLineEdit(this);
-	m_input_format = new QComboBox(this);
-	m_input_format->addItems({"ASCII", "HEX"});
-	m_send_button = new QPushButton("Send", this);
+    m_input_format->addItems({"ASCII", "HEX"});
 
-	QHBoxLayout* layout = new QHBoxLayout(this);
-	layout->addWidget(m_input_field);
-	layout->addWidget(m_input_format);
-	layout->addWidget(m_send_button);
+    QHBoxLayout* led_layout = new QHBoxLayout;
+    led_layout->addWidget(new QLabel("CTS"));
+    led_layout->addWidget(m_cts_led_frame);
+    led_layout->addWidget(new QLabel("DSR"));
+    led_layout->addWidget(m_dsr_led_frame);
+    led_layout->addWidget(new QLabel("RI"));
+    led_layout->addWidget(m_ri_led_frame);
+    led_layout->addWidget(new QLabel("DCD"));
+    led_layout->addWidget(m_dcd_led_frame);
+    QHBoxLayout* input_layout = new QHBoxLayout;
+    input_layout->addWidget(m_input_field);
+    input_layout->addWidget(m_input_format);
+    QVBoxLayout* led_input_layout = new QVBoxLayout;
+    led_input_layout->addLayout(led_layout);
+    led_input_layout->addLayout(input_layout);
+
+    QHBoxLayout* dtr_rts_layout = new QHBoxLayout;
+    dtr_rts_layout->addWidget(m_rts_button);
+    dtr_rts_layout->addWidget(m_dtr_button);
+    QVBoxLayout* button_layout = new QVBoxLayout;
+    button_layout->addLayout(dtr_rts_layout);
+    button_layout->addWidget(m_send_button);
+
+    QHBoxLayout* layout = new QHBoxLayout(this);
+    layout->addLayout(led_input_layout);
+    layout->addLayout(button_layout);
 	setLayout(layout);
 
 	connect(m_send_button, &QPushButton::clicked, this,
@@ -27,6 +57,11 @@ TerminalInputWidget::TerminalInputWidget(QWidget* parent)
 			&TerminalInputWidget::onFormatChanged);
 	connect(m_input_field, &QLineEdit::returnPressed, this,
 			&TerminalInputWidget::onReturnPressed);
+
+    handleCTS(false);
+    handleDCD(false);
+    handleDSR(false);
+    handleRI(false);
 }
 
 void TerminalInputWidget::onSendClicked()
@@ -101,4 +136,38 @@ void TerminalInputWidget::onFormatChanged(const QString& format)
 void TerminalInputWidget::onReturnPressed()
 {
 	onSendClicked();
+}
+
+void TerminalInputWidget::handleCTS(bool state)
+{
+    toggleFrame(m_cts_led_frame, state);
+}
+
+void TerminalInputWidget::handleDSR(bool state)
+{
+    toggleFrame(m_dsr_led_frame, state);
+}
+
+void TerminalInputWidget::handleRI(bool state)
+{
+    toggleFrame(m_ri_led_frame, state);
+}
+
+void TerminalInputWidget::handleDCD(bool state)
+{
+    toggleFrame(m_dcd_led_frame, state);
+}
+
+void TerminalInputWidget::toggleFrame(QFrame* frame, bool state)
+{
+    if (nullptr == frame) {
+        return;
+    }
+    QString style;
+    if (state) {
+        style = "background-color:limegreen;";
+    } else {
+        style = "background-color:lightgray;";
+    }
+    frame->setStyleSheet("border-radius:8px; " + style);
 }
