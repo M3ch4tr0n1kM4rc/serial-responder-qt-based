@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //
-// ┌──────────────────────────────────────────────────────────┐
-// │           File: loggerwidget.cpp                         │
-// │    Description: [Beschreibung hier einfügen]             │
-// │        Project: serial-responder-qt-based                │
-// │         Author: M3ch4tr0n1kM4rc                          │
-// │        Created: 2025-08-08                               │
-// │  Last Modified: 2025-08-08                               │
-// │        License: GNU GPL v3.0-only                        │
-// └──────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │           File: loggerwidget.cpp                                   │
+// │    Description: implementation of LoggerWidget class               │
+// │        Project: serial-responder-qt-based                          │
+// │         Author: M3ch4tr0n1kM4rc                                    │
+// │        Created: 2025-08-08                                         │
+// │  Last Modified: 2025-08-08                                         │
+// │        License: GNU GPL v3.0-only                                  │
+// └────────────────────────────────────────────────────────────────────┘
 
 #include "loggerwidget.h"
 
@@ -28,8 +28,6 @@ LoggerWidget::LoggerWidget(QWidget *parent) : QWidget(parent) {
                                       "Message", "Source", "Additional"});
 
     init();
-
-
 
     connect(m_export_button, &QPushButton::clicked,
             this, &LoggerWidget::handleExportClicked);
@@ -155,12 +153,12 @@ void LoggerWidget::addLogEntry(QString timestamp, QString level,
 }
 
 void LoggerWidget::handleExportClicked() {
-    QString fileName = QFileDialog::getSaveFileName(this, "Export Logs", "", "Text Files (*.txt);;All Files (*)");
+    QString fileName = QFileDialog::getSaveFileName(
+        this, "Export Logs", "", "Text Files (*.txt);;All Files (*)");
     if (fileName.isEmpty()) return;
 
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        // Optional: Fehlermeldung anzeigen
         return;
     }
 
@@ -176,12 +174,11 @@ void LoggerWidget::handleExportClicked() {
 
         // Format: |timestamp|level|message|source|additional|
         QString formattedLine = QString("|%1|%2|%3|%4|%5|")
-                                    .arg(fields.value(0) + "T" + fields.value(1)) // ISO timestamp
-                                    .arg(getLevelForEmoji(fields.value(2)))                         // level
-                                    .arg(fields.value(3))                         // message
-                                    .arg(fields.value(4))                         // source
-                                    .arg(fields.value(5));                        // additional
-
+                                    .arg(fields.value(0) + "T" + fields.value(1))
+                                    .arg(getLevelForEmoji(fields.value(2)))
+                                    .arg(fields.value(3))
+                                    .arg(fields.value(4))
+                                    .arg(fields.value(5));
         out << formattedLine << "\n";
     }
 

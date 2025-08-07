@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //
-// ┌──────────────────────────────────────────────────────────┐
-// │           File: signalindicator.cpp                      │
-// │    Description: [Beschreibung hier einfügen]             │
-// │        Project: serial-responder-qt-based                │
-// │         Author: M3ch4tr0n1kM4rc                          │
-// │        Created: 2025-08-08                               │
-// │  Last Modified: 2025-08-08                               │
-// │        License: GNU GPL v3.0-only                        │
-// └──────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │           File: signalindicator.cpp                                │
+// │    Description: implementation of SignalIndicator class            │
+// │        Project: serial-responder-qt-based                          │
+// │         Author: M3ch4tr0n1kM4rc                                    │
+// │        Created: 2025-08-08                                         │
+// │  Last Modified: 2025-08-08                                         │
+// │        License: GNU GPL v3.0-only                                  │
+// └────────────────────────────────────────────────────────────────────┘
 
 #include "signalindicator.h"
 
@@ -39,7 +39,9 @@ void SignalIndicator::setState(SignalIndicator::State state) {
         color = "red";
         break;
     }
-    m_led_label->setStyleSheet("font-size:10px; border-radius:8px; background-color:" + color + ";");
+    m_led_label->setStyleSheet("font-size:10px;"
+                               " border-radius:8px;"
+                               " background-color:" + color + ";");
 }
 
 void SignalIndicator::setValue(bool value)

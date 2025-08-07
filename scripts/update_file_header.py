@@ -23,8 +23,8 @@ FILE_EXTENSIONS = [".cpp", ".h"]
 HEADER_START = "// " + LICENSE
 HEADER_LINES = 12  # Anzahl Zeilen im Headerblock
 
-def generate_header(filename, created_date=None):
-    HEADER_WIDTH = 60
+def generate_header(filename, lines, is_header_file, created_date=None):
+    HEADER_WIDTH = 70
     LABEL_WIDTH = 14
     today = datetime.date.today().isoformat()
     created = created_date if created_date else today
@@ -37,9 +37,11 @@ def generate_header(filename, created_date=None):
     border_top = "┌" + "─" * (HEADER_WIDTH - 2) + "┐"
     border_bottom = "└" + "─" * (HEADER_WIDTH - 2) + "┘"
 
+    description = generate_description(lines, is_header_file)
+
     lines = [
         format_header_line("File", os.path.basename(filename)),
-        format_header_line("Description", "[Beschreibung hier einfügen]"),
+        format_header_line("Description", description),
         format_header_line("Project", PROJECT_NAME),
         format_header_line("Author", AUTHOR),
         format_header_line("Created", created),
@@ -57,6 +59,29 @@ def generate_header(filename, created_date=None):
 
     return "\n".join(header_lines) + "\n"
 
+def extract_class_name(lines, is_header_file):
+    if is_header_file:
+        # Suche nach Klassendefinition
+        for line in lines:
+            match = re.search(r"\bclass\s+(\w+)", line)
+            if match:
+                return match.group(1)
+    else:
+        # Suche nach Konstruktor: ClassName::ClassName(
+        for line in lines:
+            match = re.search(r"(\w+)::\1\s*\(", line)
+            if match:
+                return match.group(1)
+    return None
+
+def generate_description(lines, is_header_file):
+    class_name = extract_class_name(lines, is_header_file)
+    if class_name:
+        if is_header_file:
+            return f"definition of {class_name} class"
+        else:
+            return f"implementation of {class_name} class"
+    return "[Beschreibung hier einfügen]"
 
 def extract_created_date(lines):
     for line in lines[:HEADER_LINES]:
@@ -83,8 +108,9 @@ def process_file(filepath):
     with open(filepath, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
+    is_header_file = filepath.endswith((".h", ".hpp"))
     # Finde Ende des alten Headers (SPDX + ASCII)
-    start_content_index = find_insertion_index(lines, filepath.endswith((".h", ".hpp")))
+    start_content_index = find_insertion_index(lines, is_header_file)
     header_end_index = 0
     if start_content_index > 0:
         header_end_index = start_content_index - 1
@@ -95,12 +121,12 @@ def process_file(filepath):
     if has_spdx_header(header_lines_old):
         print(f"Aktualisiere Header: {filepath}")
         created_date = extract_created_date(header_lines_old)
-        new_header = generate_header(filepath, created_date).splitlines(keepends=True)
+        new_header = generate_header(filepath, content_lines, is_header_file, created_date).splitlines(keepends=True)
         with open(filepath, "w", encoding="utf-8") as f:
             f.writelines(new_header + ["\n"] + content_lines)
     else:
         print(f"Füge neuen Header hinzu: {filepath}")
-        new_header = generate_header(filepath).splitlines(keepends=True)
+        new_header = generate_header(filepath, content_lines, is_header_file).splitlines(keepends=True)
         with open(filepath, "w", encoding="utf-8") as f:
             f.writelines(new_header + ["\n"] + content_lines)
     return None

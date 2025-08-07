@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //
-// ┌──────────────────────────────────────────────────────────┐
-// │           File: serialwidget.cpp                         │
-// │    Description: [Beschreibung hier einfügen]             │
-// │        Project: serial-responder-qt-based                │
-// │         Author: M3ch4tr0n1kM4rc                          │
-// │        Created: 2025-08-08                               │
-// │  Last Modified: 2025-08-08                               │
-// │        License: GNU GPL v3.0-only                        │
-// └──────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │           File: serialwidget.cpp                                   │
+// │    Description: implementation of SerialWidget class               │
+// │        Project: serial-responder-qt-based                          │
+// │         Author: M3ch4tr0n1kM4rc                                    │
+// │        Created: 2025-08-08                                         │
+// │  Last Modified: 2025-08-08                                         │
+// │        License: GNU GPL v3.0-only                                  │
+// └────────────────────────────────────────────────────────────────────┘
 
 #include "serialwidget.h"
 
@@ -50,7 +50,6 @@ SerialWidget::SerialWidget(SerialManager* serial_manager, QWidget* parent)
             this, &SerialWidget::handlePinouts);
 
 	updateLed(LedState::Disconnected);
-
 }
 
 void SerialWidget::initLayout()
