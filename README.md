@@ -25,6 +25,12 @@ A cross-platform **serial responder desktop application with integrated terminal
 
 ---
 
+##
+
+![Live Demo](https://raw.githubusercontent.com/M3ch4tr0n1kM4rc/serial-responder-qt-based/main/docs/images/serial-responder-screen-example.png)
+
+---
+
 ## 📄 License & Qt Usage
 
 This project is licensed under the **GNU GPLv3**.  
@@ -44,7 +50,8 @@ More info: [https://www.qt.io/licensing](https://www.qt.io/licensing)
    git clone https://github.com/M3ch4tr0n1kM4rc/serial-responder-qt-based.git
    ```
 3. Build using QtCreator:
-   just open CMakeLists.txt
+   ```
+   open CMakeLists.txt with QtCreator
    ```
 
 ---
