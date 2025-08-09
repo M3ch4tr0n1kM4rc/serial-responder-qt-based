@@ -113,10 +113,9 @@ void MainWindow::handleResponse(const QByteArray &response)
 
 void MainWindow::handleSerialError(const QString &err)
 {
-    QString msg = "Serial Error: " + err;
     QMessageBox::critical(this, "Serial Error", err);
     m_serial_widget->updateLed(SerialWidget::LedState::Error);
-    error(msg);
+    error(err);
 }
 
 void MainWindow::menuActionLoadConfig()
@@ -214,7 +213,6 @@ void MainWindow::handleConnectionState(bool value, const QString& portname)
     m_terminal_widget->setEnabled(value);
     m_responder_widget->setEnabled(value);
     QString msg = "Connection to '" + portname + "' " + QString(value ? "opened" : "closed");
-    qDebug() << msg;
     print(msg);
 }
 
@@ -236,5 +234,8 @@ void MainWindow::error(const QString &msg)
 void MainWindow::writeLog(const QString& level, const QString &msg)
 {
     const QString timeString = QDateTime::currentDateTimeUtc().toString(Qt::DateFormat::ISODateWithMs);
-    m_logger_widget->addLogEntry("| " + timeString + " | " + level + " | " + msg + " |");
+    m_logger_widget->addLogEntry("| " + timeString
+                                 + " | " + level.simplified()
+                                 + " | " + msg.simplified()
+                                 + " |");
 }

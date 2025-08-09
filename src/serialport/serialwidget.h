@@ -45,6 +45,8 @@ class SerialWidget : public QWidget {
 	void connectClicked();
 	void updateLed(LedState state);
     void handlePinouts(bool ri, bool dcd, bool cts, bool dsr);
+private slots:
+    void handleButton();
 
 signals:
 	void connectRequested();
@@ -72,7 +74,6 @@ signals:
     SignalIndicator* m_dsr_led;
     SignalIndicator* m_ri_led;
     SignalIndicator* m_dcd_led;
-
 };
 
 #endif	// SERIALWIDGET_H

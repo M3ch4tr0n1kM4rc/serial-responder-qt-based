@@ -62,7 +62,7 @@ void SerialWidget::initLayout()
     led_layout->setSpacing(2);
     led_layout->setMargin(0);
 
-    QHBoxLayout* layout = new QHBoxLayout(this);
+    QHBoxLayout* layout = new QHBoxLayout;
     layout->addWidget(m_state_led);
     layout->addWidget(m_connect_button);
     layout->addWidget(m_refresh_button);
@@ -206,13 +206,13 @@ void SerialWidget::updateLed(LedState state)
         m_state_led->setState(SignalIndicator::State::Error);
         break;
     }
+    handleButton();
 }
 
 void SerialWidget::connectClicked()
 {
 	if (m_serial_manager->isOpen()) {
 		m_serial_manager->closePort();
-        m_connect_button->setText("Connect");
 		updateLed(LedState::Disconnected);
 		return;
 	}
@@ -224,12 +224,19 @@ void SerialWidget::connectClicked()
 		static_cast<QSerialPort::StopBits>(m_stop_bits_combo_box->currentIndex()),
 		static_cast<QSerialPort::FlowControl>(m_flow_ctrl_combo_box->currentIndex()));
 	if (ok) {
-        m_connect_button->setText("Disconnect");
 		updateLed(LedState::Connected);
 	}
 	else {
 		updateLed(LedState::Error);
 	}
+}
+
+void SerialWidget::handleButton() {
+    if (!m_serial_manager->isOpen()) {
+        m_connect_button->setText("Connect");
+    } else {
+        m_connect_button->setText("Disconnect");
+    }
 }
 
 void SerialWidget::handlePinouts(bool ri, bool dcd, bool cts, bool dsr)

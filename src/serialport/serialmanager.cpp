@@ -11,6 +11,7 @@
 // └────────────────────────────────────────────────────────────────────┘
 
 #include "serialmanager.h"
+#include "qdebug.h"
 
 SerialManager::SerialManager(QObject *parent)
 	: QObject(parent),
@@ -26,7 +27,9 @@ SerialManager::SerialManager(QObject *parent)
 
 SerialManager::~SerialManager()
 {
-    closePort();
+    if (m_serial_port.isOpen()) {
+        m_serial_port.close();
+    }
 }
 
 bool SerialManager::openPort(const QString &portname, qint32 baudrate,
@@ -47,7 +50,6 @@ bool SerialManager::openPort(const QString &portname, qint32 baudrate,
     m_serial_port.setFlowControl(flowcontrol);
 
 	if (!m_serial_port.open(QIODevice::ReadWrite)) {
-		emit errorOccurred(m_serial_port.errorString());
 		return false;
 	}
     emit connectionEstablished(true, m_serial_port.portName());
@@ -115,7 +117,9 @@ void SerialManager::onError(QSerialPort::SerialPortError error)
 	if (error == QSerialPort::NoError) {
 		return;
 	}
-	if (error == QSerialPort::PermissionError) {
+    QString error_message = "Serial Error Id[" + QString::number(error, 16) + "]:\n" + m_serial_port.errorString();
+
+    if (error == QSerialPort::PermissionError) {
         const QString errorString = m_serial_port.errorString();
         if (!errorString.contains("locking")) {
             const QString msg = m_serial_port.errorString() +
@@ -123,9 +127,16 @@ void SerialManager::onError(QSerialPort::SerialPortError error)
                                 " with:\n'sudo usermod -aG dialout $USER'.\n"
                                 " After that 'logout' is required!";
             emit errorOccurred(msg);
+            return;
         }
-		return;
 	}
+    if (error == QSerialPort::ResourceError) {
+        m_serial_port.close();
+    }
+    if (error == QSerialPort::OpenError || error == QSerialPort::DeviceNotFoundError || error == QSerialPort::NotOpenError) {
 
-	emit errorOccurred(m_serial_port.errorString());
+        m_serial_port.close();
+    }
+
+    emit errorOccurred(error_message);
 }
