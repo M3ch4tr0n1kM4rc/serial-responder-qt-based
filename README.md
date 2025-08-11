@@ -31,17 +31,6 @@ A cross-platform **serial responder desktop application with integrated terminal
 
 ---
 
-## 📄 License & Qt Usage
-
-This project is licensed under the **GNU GPLv3**.  
-It utilizes the Qt Framework under **LGPLv3**, strictly during build-time. Qt is **not bundled** or distributed with the application.
-
-> **Disclaimer:** Qt libraries are dynamically linked and must be installed independently by users.
-
-More info: [https://www.qt.io/licensing](https://www.qt.io/licensing)
-
----
-
 ## 🔧 Installation
 
 1. Install [Qt](https://www.qt.io/download) (version 5.15.13 or later).
@@ -56,7 +45,13 @@ More info: [https://www.qt.io/licensing](https://www.qt.io/licensing)
 
 ---
 
+## 📄 License & Qt Usage
+
+This project is licensed under the **GNU GPLv3**.  
+It utilizes the Qt Framework under **LGPLv3**, strictly during build-time. Qt is **not bundled** or distributed with the application.
+
 ## 📢 Legal Notice
 
 This software was developed using the Qt Framework (LGPLv3).  
 Qt is not included in this repository or distributed artifacts. All license requirements under LGPLv3 are fulfilled via dynamic linking. This project is compliant with GPLv3 and LGPLv3 obligations.
+More info: [https://www.qt.io/licensing](https://www.qt.io/licensing)
